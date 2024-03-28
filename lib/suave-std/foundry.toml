@@ -1,0 +1,6 @@
+[profile.default]
+runs = 10_000
+solc_version = "0.8.23"
+ast = true
+[profile.suave]
+whitelist = ["*"]

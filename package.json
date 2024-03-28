@@ -1,0 +1,14 @@
+{
+  "name": "casino-suapp",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@flashbots/suave-viem": "^1.14.3"
+  }
+}
