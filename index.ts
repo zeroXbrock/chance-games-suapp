@@ -45,15 +45,15 @@ async function testSlotMachine<T extends Transport>(params: {
             break
         }
         try {
-        const txHash = await slotsClient.pullSlot(slotId, 10000000000000000n)
-        const txReceipt = await suaveProvider.waitForTransactionReceipt({hash: txHash})
-        if (txReceipt.status !== "success") {
-            console.error("failed to play slot machine", txReceipt)
-            continue
-        }
-        for (const res of checkSlotPullReceipt(txReceipt)) {
-            console.log(res)
-        }
+            const txHash = await slotsClient.pullSlot(slotId, 10000000000000000n)
+            const txReceipt = await suaveProvider.waitForTransactionReceipt({hash: txHash})
+            if (txReceipt.status !== "success") {
+                console.error("failed to play slot machine", txReceipt)
+                continue
+            }
+            for (const res of checkSlotPullReceipt(txReceipt)) {
+                console.log(res)
+            }
         } catch (e) {
             const err = (e as Error).message;
             const hexString = err.match(/execution reverted: (0x[0-9a-fA-F]+)/)?.[1];
@@ -83,5 +83,5 @@ async function main() {
         adminWallet,
     })
 }
-  
-main()
+
+main().catch(console.error)
