@@ -1,82 +1,28 @@
 # casino-suapp
 
-To install dependencies:
+A decentralized slot machine built using securely-generated entropy from SUAVE.
 
-```bash
-bun install
-```
+**System Dependencies:**
 
-To run:
+- [bun](https://bun.sh)
+- [foundry](https://getfoundry.sh)
+- [suave-geth devnet](https://github.com/flashbots/suave-geth/?tab=readme-ov-file#starting-a-local-devnet)
 
-```bash
-bun run index.ts
-```
+## Quickstart Example
 
-This project was created using `bun init` in bun v1.0.33. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+1. Make sure you're running a suave-geth devnet on `http://localhost:8545`.
 
-## Foundry
+2. Build smart contracts & install dependencies from NPM:
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+    ```bash
+    forge build
+    bun install
+    ```
 
-Foundry consists of:
+3. Run the example:
 
-- **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
-- **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
-- **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
-- **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+    ```bash
+    bun run index.ts
+    ```
 
-## Documentation
-
-<https://book.getfoundry.sh/>
-
-## Usage
-
-### Build
-
-```shell
-forge build
-```
-
-### Test
-
-```shell
-forge test
-```
-
-### Format
-
-```shell
-forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-forge snapshot
-```
-
-### Anvil
-
-```shell
-anvil
-```
-
-### Deploy
-
-```shell
-forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-cast <subcommand>
-```
-
-### Help
-
-```shell
-forge --help
-anvil --help
-cast --help
-```
+    This will deploy a new slot machine and initialize it with a pot of test ETH. Then we'll pull the slot machine a bunch of times and see if we can win any money.
