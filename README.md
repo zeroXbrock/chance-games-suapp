@@ -1,6 +1,6 @@
 # casino-suapp
 
-A decentralized slot machine built using securely-generated entropy from SUAVE.
+A decentralized slot machine built using securely-generated random numbers from SUAVE.
 
 **System Dependencies:**
 
