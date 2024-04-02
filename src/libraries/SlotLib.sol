@@ -5,7 +5,7 @@ import {Random} from "suave-std/Random.sol";
 import {console2} from "forge-std/console2.sol";
 import {LibString} from "solady/src/utils/LibString.sol";
 
-library CasinoLib {
+library SlotLib {
     using LibString for uint256;
 
     uint8 public constant NUM_COLS_ROWS = 3;

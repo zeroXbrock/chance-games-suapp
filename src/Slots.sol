@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
-import "./CasinoLib.sol";
+import "./libraries/SlotLib.sol";
 import "suave-std/suavelib/Suave.sol";
 import {Random} from "suave-std/Random.sol";
 
 contract SlotMachines {
-    mapping(uint256 => CasinoLib.SlotMachine) public slotMachines;
+    mapping(uint256 => SlotLib.SlotMachine) public slotMachines;
     uint256 numMachines;
     mapping(address => uint256) public chipsBalance;
 
@@ -51,7 +51,7 @@ contract SlotMachines {
     function initSlotMachine(
         uint256 minBet
     ) public payable returns (uint256 slotId) {
-        CasinoLib.SlotMachine memory machine = CasinoLib.SlotMachine({
+        SlotLib.SlotMachine memory machine = SlotLib.SlotMachine({
             nonce: 0,
             minBet: minBet,
             pot: msg.value
@@ -73,9 +73,9 @@ contract SlotMachines {
             chipsBalance[msg.sender] >= betAmount,
             "insufficient funds deposited"
         );
-        CasinoLib.SlotMachine memory machine = slotMachines[slotId];
+        SlotLib.SlotMachine memory machine = slotMachines[slotId];
         require(betAmount >= machine.minBet, "must place at least minimum bet");
-        uint8[] memory randomNums = CasinoLib.generateSlotNumbers();
+        uint8[] memory randomNums = SlotLib.generateSlotNumbers();
         suave_call_data = encodeOnSlotPulled(betAmount, slotId, randomNums);
     }
 
@@ -97,11 +97,11 @@ contract SlotMachines {
         uint8[] memory randomNums
     ) external {
         chipsBalance[msg.sender] -= betAmount;
-        CasinoLib.SlotMachine memory machine = slotMachines[slotId];
+        SlotLib.SlotMachine memory machine = slotMachines[slotId];
         machine.pot += betAmount;
         machine.nonce++;
         uint8[3] memory roll = [randomNums[0], randomNums[1], randomNums[2]];
-        (uint256 payout, uint256 rollValue) = CasinoLib.calculateSlotPull(
+        (uint256 payout, uint256 rollValue) = SlotLib.calculateSlotPull(
             betAmount,
             roll
         );
@@ -116,7 +116,7 @@ contract SlotMachines {
             machine.pot -= betAmount;
         } else {
             machine.pot -= payout;
-            if (CasinoLib.isJackpot(rollValue)) {
+            if (SlotLib.isJackpot(rollValue)) {
                 emit Jackpot(slotId, msg.sender, payout);
             } else {
                 emit Winner(slotId, msg.sender, payout);
@@ -125,7 +125,7 @@ contract SlotMachines {
 
         machine.pot -= payout;
         slotMachines[slotId] = machine;
-        string memory board = CasinoLib.boardToString(roll);
+        string memory board = SlotLib.boardToString(roll);
         emit PulledSlot(slotId, betAmount, machine.pot, board);
 
         // disburse winnings
