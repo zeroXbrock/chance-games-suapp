@@ -15,7 +15,6 @@ export class SlotsClient<T extends Transport> {
     wallet: SuaveWallet<T>
     provider: SuaveProvider<T>
     slotMachinesAddress?: Address
-    slotLibAddress?: Address
     kettleAddress: Address
     slotIds: bigint[] = []
 
@@ -24,14 +23,12 @@ export class SlotsClient<T extends Transport> {
         provider: SuaveProvider<T>,
         slotMachinesAddress?: Address,
         kettleAddress?: Address,
-        slotLibAddress?: Address,
         slotIds?: bigint[],
     }) {
         this.wallet = params.wallet
         this.provider = params.provider
         this.slotMachinesAddress = params.slotMachinesAddress
         this.kettleAddress = params.kettleAddress || DEFAULT_KETTLE_ADDRESS
-        this.slotLibAddress = params.slotLibAddress
         this.slotIds = params.slotIds || []
     }
 
@@ -40,18 +37,6 @@ export class SlotsClient<T extends Transport> {
      * // TODO: replace self-mutating class with a factory pattern.
      */
     async deploy(): Promise<this> {
-        if (!this.slotLibAddress) {
-            // deploy slot lib
-            const deployLibTxHash = await this.wallet.deployContract({
-                abi: CasinoLibContract.abi,
-                bytecode: CasinoLibContract.bytecode.object as Hex,
-            })
-            const deployLibReceipt = await this.provider.waitForTransactionReceipt({hash: deployLibTxHash})
-            if (!deployLibReceipt.contractAddress) throw new Error('no contract address for SlotLib')
-            this.slotLibAddress = deployLibReceipt.contractAddress
-        } else [
-            console.log('using existing slot lib', this.slotLibAddress)
-        ]
         const deployContractTxHash = await this.wallet.deployContract({
             abi: SlotsContract.abi,
             bytecode: SlotsContract.bytecode.object as Hex,
@@ -80,6 +65,7 @@ export class SlotsClient<T extends Transport> {
 
     /** Deposit SUAVE-ETH to buy chips. */
     async buyChips(amount: bigint): Promise<Hash> {
+        console.log("slot address", this.slotMachinesAddress)
         if (!this.slotMachinesAddress) throw new Error('slot machine must be deployed first')
         const txRequest: TransactionRequestSuave = {
             to: this.slotMachinesAddress,
@@ -89,7 +75,7 @@ export class SlotsClient<T extends Transport> {
             }),
             type: '0x0',
             value: amount,
-            gas: 75000n,
+            gas: 180000n,
             gasPrice: 1000000000n,
         }
         return await this.wallet.sendTransaction(txRequest)
@@ -115,6 +101,7 @@ export class SlotsClient<T extends Transport> {
     /** Initialize a new slot machine, waits for tx receipt. */
     async initSlotMachine(startingPot: bigint, minBet: bigint): Promise<SlotMachineLog> {
         if (!this.slotMachinesAddress) throw new Error('slot machine must be deployed first')
+        console.log("initializing new slot machine...")
         const txRequest: TransactionRequestSuave = {
             to: this.slotMachinesAddress,
             data: encodeFunctionData({
@@ -123,8 +110,8 @@ export class SlotsClient<T extends Transport> {
                 args: [minBet],
             }),
             type: '0x0',
-            gas: 175000n,
-            gasPrice: 1000000n,
+            gas: 200000n,
+            gasPrice: 1000000000n,
             value: startingPot,
         }
         const txHash = await this.wallet.sendTransaction(txRequest)
@@ -151,7 +138,7 @@ export class SlotsClient<T extends Transport> {
             kettleAddress: this.kettleAddress,
             type: '0x43',
             gas: 220000n,
-            gasPrice: 1000000n,
+            gasPrice: 1000000000n,
         }
         return await this.wallet.sendTransaction(txRequest)
     }

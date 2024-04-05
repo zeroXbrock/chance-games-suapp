@@ -29,6 +29,7 @@ async function testSlotMachine<T extends Transport>(params: {
     console.log("admin balance", roundEth(startBalance))
     // buy chips to play
     const buyChipsRes = await slotsClient.buyChips(1n * ETH)
+    console.log("buying chips...", buyChipsRes)
     await suaveProvider.waitForTransactionReceipt({hash: buyChipsRes})
 
     // init slot machine w/ 1 ETH and 25% chance of winning
