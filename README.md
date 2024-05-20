@@ -1,4 +1,4 @@
-# casino-suapp
+# chance games
 
 A decentralized slot machine built using securely-generated random numbers from SUAVE.
 
